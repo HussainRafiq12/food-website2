@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Food Delivery</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .admin-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 2rem;
+        }
+        .admin-form {
+            margin-bottom: 2rem;
+        }
+        .admin-form input {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .admin-form button {
+            padding: 0.5rem 1rem;
+            background-color: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .items-list {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <h2>Admin Dashboard</h2>
+        <div class="admin-form">
+            <h3>Add New Item</h3>
+            <input type="text" id="itemName" placeholder="Item Name">
+            <input type="number" id="itemPrice" placeholder="Price">
+            <input type="text" id="itemImage" placeholder="Image URL">
+            <button onclick="addItem()">Add Item</button>
+        </div>
+
+        <div class="items-list" id="itemsList"></div>
+    </div>
+
+    <script>
+        // Load and display items
+        function displayItems() {
+            const itemsList = document.getElementById('itemsList');
+            const items = JSON.parse(localStorage.getItem('adminItems')) || [];
+
+            itemsList.innerHTML = '<h3>Current Items</h3>';
+            items.forEach((item, index) => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'food-card';
+                itemElement.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}">
+                    <div class="food-card-content">
+                        <h3>${item.name}</h3>
+                        <p>$${item.price}</p>
+                        <button onclick="deleteItem(${index})">Delete</button>
+                    </div>
+                `;
+                itemsList.appendChild(itemElement);
+            });
+        }
+
+        // Add new item
+        function addItem() {
+            const name = document.getElementById('itemName').value;
+            const price = parseFloat(document.getElementById('itemPrice').value);
+            const image = document.getElementById('itemImage').value;
+
+            if (!name || !price || !image) {
+                alert('Please fill all fields!');
+                return;
+            }
+
+            const items = JSON.parse(localStorage.getItem('adminItems')) || [];
+            items.push({ name, price, image });
+            localStorage.setItem('adminItems', JSON.stringify(items));
+
+            // Clear form
+            document.getElementById('itemName').value = '';
+            document.getElementById('itemPrice').value = '';
+            document.getElementById('itemImage').value = '';
+
+            displayItems();
+        }
+
+        // Delete item
+        function deleteItem(index) {
+            const items = JSON.parse(localStorage.getItem('adminItems')) || [];
+            items.splice(index, 1);
+            localStorage.setItem('adminItems', JSON.stringify(items));
+            displayItems();
+        }
+
+        // Initial display
+        displayItems();
+    </script>
+</body>
+</html>
